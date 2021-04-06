@@ -1,11 +1,31 @@
+#---------------------- Header -----------------------------####
+# date:         01.04.2021
+# author:       Ronny Bujok (Ronny.Bujok@mpi.nl)
+# filename:     session4.R
+# description:  This script determines the sample sizes needed for 
+#               the analysis of a one-sided Pearson correlation (negative correlation),
+#               given a predetermined effect size, based on a simulated dataset, 
+#               and a target power of 0.8
+# project:      Key Practices Course
+#------------------------------------------------------------##
+
+
+#---------------------- Change log -------------------------####
+
+#--------------- Change #1 ----------------------#
+# Modified on 06.04.2021:
+# change two sided power analysis to one sided analysis (i.e., negative correlation expected)
+#------------------------------------------------#
+
+
+# --------------------- library declaration --------------------####
 library(tidyverse)
 library(pwr)
 library(simr)
 library(WebPower)
 
+# --------------------- playing around ----------------------####
 set.seed(1)
-
-#playing around with hypothetical correlations
 pwr.r.test(n = NULL,
            r = 0.3,
            power = 0.8,
@@ -13,31 +33,28 @@ pwr.r.test(n = NULL,
            alternative = "two.sided")
 
 
-####################### Actual Simulation #################
+#---------------------- Actual Simulation -------------------####
 
-# Load in mock data
-df <- read.csv("SimData_SoPVoc.csv")
 
-#get the correlation from the dataset
-df_corr <- cor(df$meanRT,df$produce, method=("pearson"))
+SimData <- read.csv("SimData_SoPVoc.csv")
+RT_produce_correlation <- cor(SimData$meanRT,df$produce, method=("pearson"))
 
-# calculate the sample size needed for a two sided test (no directional hypothesis)
-pwr.r.test(n = NULL,
-           r = df_corr,
-           power = 0.8,
-           sig.level = 0.05,
-           alternative = "two.sided")
+# ------------------------- Change #1 --------------------------#
+# pwr.r.test(n = NULL,
+#            r = df_corr,
+#            power = 0.8,
+#            sig.level = 0.05,
+#            alternative = "two.sided")
 
-# calculate the sample size needed for a one sided test
-# the hypothesis is directional (i.e., negative correlation expected), therefore this makes more sense
 pwr.r.test(n = NULL,
            r = df_corr,
            power = 0.8,
            sig.level = 0.05,
            alternative = "less")
 
+#---------------------------------------------------------------#
 
-# plot power curve to confirm and visualize the power at different sample sizes
+# --------------------- plot power curve ------------------####
 
 res <- wp.correlation(n=seq(20,100,5),r=df_corr,alternative="less")
 
